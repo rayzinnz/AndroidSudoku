@@ -20,7 +20,7 @@ class SudokuViewModel : ViewModel() {
     var selectedCellIndex by mutableStateOf<Int?>(null)
         private set
 
-    var entryMode by mutableStateOf(EntryMode.SOLVE)
+    var entryMode by mutableStateOf(EntryMode.PLACEHOLDER)
         private set
 
     var highlightedDigit by mutableStateOf<Int?>(null)
