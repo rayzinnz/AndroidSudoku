@@ -23,6 +23,9 @@ class SudokuViewModel : ViewModel() {
     var entryMode by mutableStateOf(EntryMode.SOLVE)
         private set
 
+    var highlightedDigit by mutableStateOf<Int?>(null)
+        private set
+
     val isPuzzleSolved: Boolean
         get() {
             if (cells.size != 81) return false
@@ -52,16 +55,23 @@ class SudokuViewModel : ViewModel() {
             )
         }
         selectedCellIndex = null
+        highlightedDigit = null
     }
 
     fun onCellClicked(index: Int) {
-        if (index in 0..80 && !cells[index].isPrefilled) {
-            selectedCellIndex = index
+        if (index in 0..80) {
+            val cell = cells[index]
+            highlightedDigit = if (cell.isPrefilled) cell.prefilledDigit
+            else cell.userDigit
+            if (!cell.isPrefilled) {
+                selectedCellIndex = index
+            }
         }
     }
 
     fun dismissDialog() {
         selectedCellIndex = null
+        highlightedDigit = null
     }
 
     fun setMode(mode: EntryMode) {

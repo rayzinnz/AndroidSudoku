@@ -28,6 +28,7 @@ fun SudokuScreen(
     val selectedIndex = viewModel.selectedCellIndex
     val entryMode = viewModel.entryMode
     val isSolved = viewModel.isPuzzleSolved
+    val highlightedDigit = viewModel.highlightedDigit
 
     Scaffold(
         topBar = {
@@ -89,6 +90,7 @@ fun SudokuScreen(
             SudokuGrid(
                 cells = cells,
                 selectedIndex = selectedIndex,
+                highlightedDigit = highlightedDigit,
                 onCellClick = { index -> viewModel.onCellClicked(index) },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -117,6 +119,7 @@ fun SudokuScreen(
 fun SudokuGrid(
     cells: List<SudokuCellState>,
     selectedIndex: Int?,
+    highlightedDigit: Int?,
     onCellClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -156,6 +159,7 @@ fun SudokuGrid(
                                                     SudokuCell(
                                                         cellState = cellState,
                                                         isSelected = selectedIndex == index,
+                                                        highlightedDigit = highlightedDigit,
                                                         onClick = { onCellClick(index) }
                                                     )
                                                 }
@@ -176,10 +180,15 @@ fun SudokuGrid(
 fun SudokuCell(
     cellState: SudokuCellState,
     isSelected: Boolean,
+    highlightedDigit: Int?,
     onClick: () -> Unit
 ) {
+    val cellDigit = if (cellState.isPrefilled) cellState.prefilledDigit else cellState.userDigit
+    val isHighlighted = highlightedDigit != null && cellDigit == highlightedDigit && !isSelected
+
     val backgroundColor = when {
         isSelected -> Color(0xFFBBDEFB)
+        isHighlighted -> Color(0xFFFFF9C4)
         cellState.isPrefilled -> Color(0xFFF5F5F5)
         else -> Color.White
     }
@@ -188,7 +197,7 @@ fun SudokuCell(
         modifier = Modifier
             .fillMaxSize()
             .background(backgroundColor)
-            .clickable(enabled = !cellState.isPrefilled) { onClick() },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         when {
