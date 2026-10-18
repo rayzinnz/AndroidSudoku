@@ -92,6 +92,7 @@ fun SudokuScreen(
                 selectedIndex = selectedIndex,
                 highlightedDigit = highlightedDigit,
                 onCellClick = { index -> viewModel.onCellClicked(index) },
+                isDigitCorrect = { index, digit -> viewModel.isDigitCorrect(index, digit) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
@@ -121,6 +122,7 @@ fun SudokuGrid(
     selectedIndex: Int?,
     highlightedDigit: Int?,
     onCellClick: (Int) -> Unit,
+    isDigitCorrect: (Int, Int) -> Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -160,6 +162,7 @@ fun SudokuGrid(
                                                         cellState = cellState,
                                                         isSelected = selectedIndex == index,
                                                         highlightedDigit = highlightedDigit,
+                                                        isDigitCorrect = isDigitCorrect,
                                                         onClick = { onCellClick(index) }
                                                     )
                                                 }
@@ -181,6 +184,7 @@ fun SudokuCell(
     cellState: SudokuCellState,
     isSelected: Boolean,
     highlightedDigit: Int?,
+    isDigitCorrect: (Int, Int) -> Boolean,
     onClick: () -> Unit
 ) {
     val cellDigit = if (cellState.isPrefilled) cellState.prefilledDigit else cellState.userDigit
@@ -210,13 +214,16 @@ fun SudokuCell(
                     color = Color.Black
                 )
             }
-            // Solved user digit: Blue font color
+            // Solved user digit: Blue if correct, Red if incorrect
             cellState.userDigit != null -> {
                 Text(
                     text = "${cellState.userDigit}",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1976D2)
+                    color = if (isDigitCorrect(cellState.index, cellState.userDigit!!))
+                        Color(0xFF1976D2)
+                    else
+                        Color(0xFFD32F2F)
                 )
             }
             // Placeholder digits: 3x3 mini grid

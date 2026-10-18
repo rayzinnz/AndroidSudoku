@@ -120,4 +120,6 @@ class SudokuViewModel : ViewModel() {
     fun resetBoard() {
         loadPuzzle()
     }
+
+    fun isDigitCorrect(index: Int, digit: Int): Boolean = solvedPuzzle[index] == digit
 }
