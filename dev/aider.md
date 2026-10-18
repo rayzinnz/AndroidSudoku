@@ -1,10 +1,11 @@
 ```sh
-cd /home/ray/MEGA/Rays/AndroidstudioProjects/AndroidLocationService
+cd /home/ray/MEGA/Rays/AndroidstudioProjects/AndroidSudoku
 aider --chat-mode ask --edit-format diff
 aider --edit-format diff
+aider --edit-format diff --yes-always
 aider --edit-format diff --no-verify-ssl
 
---yes-always
+
 
 
 /add 
@@ -14,3 +15,4 @@ aider --edit-format diff --no-verify-ssl
 
 ====
 
+In this sudoku app, if clicking a square, highlight all other squares with that same number.
