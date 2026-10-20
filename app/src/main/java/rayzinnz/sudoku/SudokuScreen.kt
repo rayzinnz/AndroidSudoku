@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -25,10 +24,10 @@ fun SudokuScreen(
     viewModel: SudokuViewModel
 ) {
     val cells = viewModel.cells
-    val selectedIndex = viewModel.selectedCellIndex
     val entryMode = viewModel.entryMode
     val isSolved = viewModel.isPuzzleSolved
     val highlightedDigit = viewModel.highlightedDigit
+    val selectedDigit = viewModel.selectedDigit
 
     Scaffold(
         topBar = {
@@ -89,29 +88,74 @@ fun SudokuScreen(
             // 9x9 Sudoku Board
             SudokuGrid(
                 cells = cells,
-                selectedIndex = selectedIndex,
                 highlightedDigit = highlightedDigit,
                 onCellClick = { index -> viewModel.onCellClicked(index) },
                 isDigitCorrect = { index, digit -> viewModel.isDigitCorrect(index, digit) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+            // Mode toggle
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Solve Digit",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Switch(
+                    checked = entryMode == EntryMode.PLACEHOLDER,
+                    onCheckedChange = { viewModel.setMode(if (it) EntryMode.PLACEHOLDER else EntryMode.SOLVE) }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Placeholder",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
-        // Popup Input Dialog when a cell is selected
-        if (selectedIndex != null && selectedIndex in cells.indices) {
-            val cell = cells[selectedIndex]
-            CellInputDialog(
-                selectedCell = cell,
-                entryMode = entryMode,
-                onModeChange = { viewModel.setMode(it) },
-                onDigitSelect = { digit -> viewModel.onDigitInput(digit) },
-                onDelete = { viewModel.onDeleteInput() },
-                onDismiss = { viewModel.dismissDialog() }
-            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Number pad 1-9
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                for (r in 0..2) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        for (c in 0..2) {
+                            val digit = r * 3 + c + 1
+                            val isSelected = selectedDigit == digit
+                            Button(
+                                onClick = { viewModel.setSelectedDigit(digit) },
+                                modifier = Modifier.size(52.dp),
+                                colors = if (isSelected) {
+                                    ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.primary
+                                    )
+                                } else {
+                                    ButtonDefaults.outlinedButtonColors()
+                                },
+                                border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+                                contentPadding = PaddingValues(0.dp)
+                            ) {
+                                Text(
+                                    text = "$digit",
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -119,7 +163,6 @@ fun SudokuScreen(
 @Composable
 fun SudokuGrid(
     cells: List<SudokuCellState>,
-    selectedIndex: Int?,
     highlightedDigit: Int?,
     onCellClick: (Int) -> Unit,
     isDigitCorrect: (Int, Int) -> Boolean,
@@ -160,7 +203,6 @@ fun SudokuGrid(
                                                 ) {
                                                     SudokuCell(
                                                         cellState = cellState,
-                                                        isSelected = selectedIndex == index,
                                                         highlightedDigit = highlightedDigit,
                                                         isDigitCorrect = isDigitCorrect,
                                                         onClick = { onCellClick(index) }
@@ -182,16 +224,14 @@ fun SudokuGrid(
 @Composable
 fun SudokuCell(
     cellState: SudokuCellState,
-    isSelected: Boolean,
     highlightedDigit: Int?,
     isDigitCorrect: (Int, Int) -> Boolean,
     onClick: () -> Unit
 ) {
     val cellDigit = if (cellState.isPrefilled) cellState.prefilledDigit else cellState.userDigit
-    val isHighlighted = highlightedDigit != null && cellDigit == highlightedDigit && !isSelected
+    val isHighlighted = highlightedDigit != null && cellDigit == highlightedDigit
 
     val backgroundColor = when {
-        isSelected -> Color(0xFFBBDEFB)
         isHighlighted -> Color(0xFFFFF9C4)
         cellState.isPrefilled -> Color(0xFFF5F5F5)
         else -> Color.White
@@ -266,125 +306,6 @@ fun SudokuCell(
             }
         }
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CellInputDialog(
-    selectedCell: SudokuCellState,
-    entryMode: EntryMode,
-    onModeChange: (EntryMode) -> Unit,
-    onDigitSelect: (Int) -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = {
-            Text(
-                text = "Square R${selectedCell.row + 1}, C${selectedCell.col + 1}",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Mode selector
-                SingleChoiceSegmentedButtonRow(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    SegmentedButton(
-                        selected = entryMode == EntryMode.SOLVE,
-                        onClick = { onModeChange(EntryMode.SOLVE) },
-                        shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2)
-                    ) {
-                        Text("Solve Digit")
-                    }
-                    SegmentedButton(
-                        selected = entryMode == EntryMode.PLACEHOLDER,
-                        onClick = { onModeChange(EntryMode.PLACEHOLDER) },
-                        shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2)
-                    ) {
-                        Text("Placeholder")
-                    }
-                }
-
-                Text(
-                    text = if (entryMode == EntryMode.SOLVE)
-                        "Tap a digit to fill as solved (blue)"
-                    else
-                        "Tap digits to toggle as placeholders",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                // 3x3 Keypad 1..9
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    for (r in 0..2) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            for (c in 0..2) {
-                                val digit = r * 3 + c + 1
-                                val isActive = if (entryMode == EntryMode.SOLVE) {
-                                    selectedCell.userDigit == digit
-                                } else {
-                                    selectedCell.placeholders.contains(digit)
-                                }
-
-                                Button(
-                                    onClick = { onDigitSelect(digit) },
-                                    modifier = Modifier.size(52.dp),
-                                    colors = if (isActive) {
-                                        ButtonDefaults.buttonColors(
-                                            containerColor = MaterialTheme.colorScheme.primary
-                                        )
-                                    } else {
-                                        ButtonDefaults.outlinedButtonColors()
-                                    },
-                                    border = if (!isActive) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
-                                    contentPadding = PaddingValues(0.dp)
-                                ) {
-                                    Text(
-                                        text = "$digit",
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Delete Button
-                OutlinedButton(
-                    onClick = onDelete,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.error
-                    ),
-                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete"
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Delete / Clear Square")
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Done")
-            }
-        }
-    )
 }
 
 @Preview(showBackground = true)

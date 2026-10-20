@@ -17,13 +17,13 @@ class SudokuViewModel : ViewModel() {
 
     private var solvedPuzzle = IntArray(81)
 
-    var selectedCellIndex by mutableStateOf<Int?>(null)
-        private set
-
     var entryMode by mutableStateOf(EntryMode.PLACEHOLDER)
         private set
 
     var highlightedDigit by mutableStateOf<Int?>(null)
+        private set
+
+    var selectedDigit by mutableStateOf(1)
         private set
 
     val isPuzzleSolved: Boolean
@@ -54,67 +54,46 @@ class SudokuViewModel : ViewModel() {
                 prefilledDigit = valAtStart,
             )
         }
-        selectedCellIndex = null
         highlightedDigit = null
     }
 
     fun onCellClicked(index: Int) {
         if (index in 0..80) {
             val cell = cells[index]
-            highlightedDigit = if (cell.isPrefilled) cell.prefilledDigit
-            else cell.userDigit
-            if (!cell.isPrefilled) {
-                selectedCellIndex = index
+            if (cell.isPrefilled) {
+                highlightedDigit = cell.prefilledDigit
+                return
             }
-        }
-    }
 
-    fun dismissDialog() {
-        selectedCellIndex = null
-        highlightedDigit = null
+            val updatedCell = if (entryMode == EntryMode.SOLVE) {
+                val newDigit = if (cell.userDigit == selectedDigit) null else selectedDigit
+                cell.copy(
+                    userDigit = newDigit,
+                    placeholders = emptySet()
+                )
+            } else {
+                val newPlaceholders = cell.placeholders.toMutableSet().apply {
+                    if (contains(selectedDigit)) remove(selectedDigit) else add(selectedDigit)
+                }
+                cell.copy(
+                    userDigit = null,
+                    placeholders = newPlaceholders
+                )
+            }
+
+            cells = cells.toMutableList().apply {
+                this[index] = updatedCell
+            }
+            highlightedDigit = null
+        }
     }
 
     fun setMode(mode: EntryMode) {
         entryMode = mode
     }
 
-    fun onDigitInput(digit: Int) {
-        val index = selectedCellIndex ?: return
-        val currentCell = cells[index]
-        if (currentCell.isPrefilled) return
-
-        val updatedCell = if (entryMode == EntryMode.SOLVE) {
-            val newDigit = if (currentCell.userDigit == digit) null else digit
-            currentCell.copy(
-                userDigit = newDigit,
-                placeholders = emptySet()
-            )
-        } else {
-            val newPlaceholders = currentCell.placeholders.toMutableSet().apply {
-                if (contains(digit)) remove(digit) else add(digit)
-            }
-            currentCell.copy(
-                userDigit = null,
-                placeholders = newPlaceholders
-            )
-        }
-
-        cells = cells.toMutableList().apply {
-            this[index] = updatedCell
-        }
-    }
-
-    fun onDeleteInput() {
-        val index = selectedCellIndex ?: return
-        val currentCell = cells[index]
-        if (currentCell.isPrefilled) return
-
-        cells = cells.toMutableList().apply {
-            this[index] = currentCell.copy(
-                userDigit = null,
-                placeholders = emptySet()
-            )
-        }
+    fun setSelectedDigit(digit: Int) {
+        selectedDigit = digit
     }
 
     fun resetBoard() {
