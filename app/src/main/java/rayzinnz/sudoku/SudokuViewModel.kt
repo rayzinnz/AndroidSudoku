@@ -92,7 +92,7 @@ class SudokuViewModel : ViewModel() {
         entryMode = mode
     }
 
-    fun setSelectedDigit(digit: Int) {
+    fun selectDigit(digit: Int) {
         selectedDigit = digit
     }
 

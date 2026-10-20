@@ -133,7 +133,7 @@ fun SudokuScreen(
                             val digit = r * 3 + c + 1
                             val isSelected = selectedDigit == digit
                             Button(
-                                onClick = { viewModel.setSelectedDigit(digit) },
+                                onClick = { viewModel.selectDigit(digit) },
                                 modifier = Modifier.size(52.dp),
                                 colors = if (isSelected) {
                                     ButtonDefaults.buttonColors(
