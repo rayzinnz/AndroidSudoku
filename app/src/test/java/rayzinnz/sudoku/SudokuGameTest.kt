@@ -71,18 +71,22 @@ class SudokuGameTest {
     @Test
     fun viewModel_prefilledCellsCannotBeModified() {
         val vm = SudokuViewModel()
+        vm.setMode(EntryMode.SOLVE)
+        vm.setSelectedDigit(5)
         vm.onCellClicked(3) // Index 3 is prefilled with 2
-        assertNull(vm.selectedCellIndex) // Tapping prefilled cell does not select it
+        // Tapping prefilled cell does not modify it
+        assertTrue(vm.cells[3].isPrefilled)
+        assertEquals(2, vm.cells[3].prefilledDigit)
+        assertNull(vm.cells[3].userDigit)
+        assertTrue(vm.cells[3].placeholders.isEmpty())
     }
 
     @Test
     fun viewModel_solveDigitInputWorks() {
         val vm = SudokuViewModel()
-        vm.onCellClicked(0) // Index 0 is editable
-        assertEquals(0, vm.selectedCellIndex)
-
         vm.setMode(EntryMode.SOLVE)
-        vm.onDigitInput(3)
+        vm.setSelectedDigit(3)
+        vm.onCellClicked(0) // Index 0 is editable
 
         val updatedCell = vm.cells[0]
         assertEquals(3, updatedCell.userDigit)
@@ -92,33 +96,36 @@ class SudokuGameTest {
     @Test
     fun viewModel_placeholderInputWorks() {
         val vm = SudokuViewModel()
-        vm.onCellClicked(0)
         vm.setMode(EntryMode.PLACEHOLDER)
 
-        vm.onDigitInput(1)
-        vm.onDigitInput(8)
+        vm.setSelectedDigit(1)
+        vm.onCellClicked(0)
+
+        vm.setSelectedDigit(8)
+        vm.onCellClicked(0)
 
         val updatedCell = vm.cells[0]
         assertNull(updatedCell.userDigit)
         assertEquals(setOf(1, 8), updatedCell.placeholders)
 
         // Toggle candidate 1 off
-        vm.onDigitInput(1)
+        vm.setSelectedDigit(1)
+        vm.onCellClicked(0)
         assertEquals(setOf(8), vm.cells[0].placeholders)
     }
 
     @Test
     fun viewModel_deleteInputClearsCell() {
         val vm = SudokuViewModel()
-        vm.onCellClicked(0)
+        vm.setMode(EntryMode.SOLVE)
+        vm.setSelectedDigit(3)
 
         // Set digit
-        vm.setMode(EntryMode.SOLVE)
-        vm.onDigitInput(3)
+        vm.onCellClicked(0)
         assertEquals(3, vm.cells[0].userDigit)
 
-        // Delete
-        vm.onDeleteInput()
+        // Click same digit again to clear (toggle off)
+        vm.onCellClicked(0)
         assertNull(vm.cells[0].userDigit)
         assertTrue(vm.cells[0].placeholders.isEmpty())
     }
@@ -129,11 +136,11 @@ class SudokuGameTest {
         val (_, solved) = generatePuzzleNumbers()
 
         // Fill all non-prefilled cells with solution
+        vm.setMode(EntryMode.SOLVE)
         for (i in 0 until 81) {
             if (!vm.cells[i].isPrefilled) {
+                vm.setSelectedDigit(solved[i])
                 vm.onCellClicked(i)
-                vm.setMode(EntryMode.SOLVE)
-                vm.onDigitInput(solved[i])
             }
         }
 
