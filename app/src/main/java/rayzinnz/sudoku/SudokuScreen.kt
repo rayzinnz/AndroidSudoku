@@ -127,8 +127,7 @@ fun SudokuScreen(
                 for (r in 0..2) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         for (c in 0..2) {
                             val digit = r * 3 + c + 1
