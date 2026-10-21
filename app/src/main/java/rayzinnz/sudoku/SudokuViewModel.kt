@@ -61,7 +61,13 @@ class SudokuViewModel : ViewModel() {
         if (index in 0..80) {
             val cell = cells[index]
             if (cell.isPrefilled) {
-                highlightedDigit = cell.prefilledDigit
+//                highlightedDigit = cell.prefilledDigit
+                selectDigit(cell.prefilledDigit)
+                return
+            }
+            if (cell.userDigit != null && highlightedDigit!=cell.userDigit) {
+//                highlightedDigit = cell.userDigit
+                selectDigit(cell.userDigit)
                 return
             }
 
@@ -84,7 +90,7 @@ class SudokuViewModel : ViewModel() {
             cells = cells.toMutableList().apply {
                 this[index] = updatedCell
             }
-            highlightedDigit = null
+            highlightedDigit = updatedCell.userDigit
         }
     }
 
@@ -94,6 +100,7 @@ class SudokuViewModel : ViewModel() {
 
     fun selectDigit(digit: Int) {
         selectedDigit = digit
+        highlightedDigit = digit
     }
 
     fun resetBoard() {

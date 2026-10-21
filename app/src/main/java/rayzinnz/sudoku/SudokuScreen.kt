@@ -78,7 +78,7 @@ fun SudokuScreen(
                 }
             } else {
                 Text(
-                    text = "Tap any empty or editable square to enter numbers or placeholders.",
+                    text = "",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(bottom = 8.dp)
