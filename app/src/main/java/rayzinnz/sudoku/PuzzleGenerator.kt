@@ -325,7 +325,7 @@ private fun solvePuzzle(puzzle: IntArray, presolved: IntArray? = null): IntArray
             }
 
             if (foundMatches[0] != 0) {
-                for (rrremove in 0 until 9) {
+                for (rremove in 0 until 9) {
                     val iremove = rremove * 9 + c
                     if (iremove != foundIn[0] && iremove != foundIn[1]) {
                         if (possibles[iremove].contains(foundMatches[0]) ||
