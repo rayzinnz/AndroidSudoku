@@ -9,7 +9,7 @@ aider --edit-format diff --no-verify-ssl
 
 
 
-/add 
+/add app\src\main\java\rayzinnz\sudoku\PuzzleGenerator.kt
 
 /run ./gradlew :app:assembleDebug
 ```
