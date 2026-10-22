@@ -226,7 +226,7 @@ fun SudokuCell(
     highlightedDigit: Int?,
     isDigitCorrect: (Int, Int) -> Boolean,
     onClick: () -> Unit
-) {
+) { 
     val cellDigit = if (cellState.isPrefilled) cellState.prefilledDigit else cellState.userDigit
     val isHighlighted = highlightedDigit != null && cellDigit == highlightedDigit
 
