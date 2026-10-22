@@ -36,6 +36,19 @@ class SudokuViewModel : ViewModel() {
             return true
         }
 
+    val completedDigits: Set<Int>
+        get() {
+            if (cells.size != 81) return emptySet()
+            val correctCounts = IntArray(10)
+            for (i in 0 until 81) {
+                val current = if (cells[i].isPrefilled) cells[i].prefilledDigit else cells[i].userDigit
+                if (current != null && current == solvedPuzzle[i]) {
+                    correctCounts[current]++
+                }
+            }
+            return (1..9).filter { correctCounts[it] == 9 }.toSet()
+        }
+
     init {
         loadPuzzle()
     }

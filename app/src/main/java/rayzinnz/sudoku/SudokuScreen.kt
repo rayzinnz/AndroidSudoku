@@ -28,6 +28,7 @@ fun SudokuScreen(
     val isSolved = viewModel.isPuzzleSolved
     val highlightedDigit = viewModel.highlightedDigit
     val selectedDigit = viewModel.selectedDigit
+    val completedDigits = viewModel.completedDigits
 
     Scaffold(
         topBar = {
@@ -132,23 +133,27 @@ fun SudokuScreen(
                         for (c in 0..2) {
                             val digit = r * 3 + c + 1
                             val isSelected = selectedDigit == digit
+                            val isCompleted = completedDigits.contains(digit)
                             Button(
                                 onClick = { viewModel.selectDigit(digit) },
                                 modifier = Modifier.size(52.dp),
-                                colors = if (isSelected) {
-                                    ButtonDefaults.buttonColors(
+                                colors = when {
+                                    isCompleted -> ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFF800000)
+                                    )
+                                    isSelected -> ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary
                                     )
-                                } else {
-                                    ButtonDefaults.outlinedButtonColors()
+                                    else -> ButtonDefaults.outlinedButtonColors()
                                 },
-                                border = if (!isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
+                                border = if (!isCompleted && !isSelected) BorderStroke(1.dp, MaterialTheme.colorScheme.outline) else null,
                                 contentPadding = PaddingValues(0.dp)
                             ) {
                                 Text(
                                     text = "$digit",
                                     fontSize = 18.sp,
-                                    fontWeight = FontWeight.Bold
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isCompleted) Color.White else Color.Unspecified
                                 )
                             }
                         }
