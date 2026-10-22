@@ -109,7 +109,7 @@ fun SudokuScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Switch(
-                    checked = entryMode == EntryMode.SOLVE,
+                    checked = entryMode == EntryMode.PLACEHOLDER,
                     onCheckedChange = { viewModel.setMode(if (it) EntryMode.PLACEHOLDER else EntryMode.SOLVE) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))

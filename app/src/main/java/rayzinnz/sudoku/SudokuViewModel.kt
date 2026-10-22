@@ -104,7 +104,7 @@ class SudokuViewModel : ViewModel() {
             cells = cells.toMutableList().apply {
                 this[index] = updatedCell
             }
-            highlightedDigit = updatedCell.userDigit
+            highlightedDigit = selectedDigit
         }
     }
 
