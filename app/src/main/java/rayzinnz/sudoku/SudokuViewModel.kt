@@ -54,7 +54,8 @@ class SudokuViewModel : ViewModel() {
                 prefilledDigit = valAtStart,
             )
         }
-        highlightedDigit = null
+//        highlightedDigit = null
+        selectDigit(1)
     }
 
     fun onCellClicked(index: Int) {

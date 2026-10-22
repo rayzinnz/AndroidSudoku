@@ -108,7 +108,7 @@ fun SudokuScreen(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Switch(
-                    checked = entryMode == EntryMode.PLACEHOLDER,
+                    checked = entryMode == EntryMode.SOLVE,
                     onCheckedChange = { viewModel.setMode(if (it) EntryMode.PLACEHOLDER else EntryMode.SOLVE) }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
@@ -232,7 +232,7 @@ fun SudokuCell(
 
     val backgroundColor = when {
         isHighlighted -> Color(0xFFFFF9C4)
-        cellState.isPrefilled -> Color(0xFFF5F5F5)
+        cellState.isPrefilled -> Color(0xFFC9DAFF)
         else -> Color.White
     }
 
