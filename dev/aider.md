@@ -16,4 +16,4 @@ aider --edit-format diff --no-verify-ssl
 
 ====
 
-In this sudoku app, I want when all 9 of a digit are solved correctly, the equivalent digit in the number pad is coloured maroon.
+In this sudoku app, it should save the game state automatically. When the app is opened up, it should restore the in-play game to the same state (if any). So the unsolved game and the solved game are loaded back into memory, any already guessed numbers and placeholders are restored.
