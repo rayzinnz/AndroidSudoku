@@ -135,8 +135,8 @@ class SudokuViewModel(application: Application) : AndroidViewModel(application) 
     private fun saveState() {
         prefs.edit().apply {
             putString("solved_puzzle", solvedPuzzle.joinToString(","))
-            putString("unsolved_puzzle", cells.joinToString(",") { it.prefilledDigit })
-            putString("user_digits", cells.joinToString(",") { it.userDigit ?: 0 })
+            putString("unsolved_puzzle", cells.joinToString(",") { it.prefilledDigit.toString() })
+            putString("user_digits", cells.joinToString(",") { (it.userDigit ?: 0).toString() })
             putString("placeholders", cells.joinToString("|") { it.placeholders.joinToString(",") })
             putString("entry_mode", entryMode.name)
             putInt("selected_digit", selectedDigit)
