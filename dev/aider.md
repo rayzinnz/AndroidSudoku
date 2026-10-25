@@ -16,4 +16,4 @@ aider --edit-format diff --no-verify-ssl
 
 ====
 
-In this sudoku app, it should save the game state automatically. When the app is opened up, it should restore the in-play game to the same state (if any). So the unsolved game and the solved game are loaded back into memory, any already guessed numbers and placeholders are restored.
+In this sudoku app, When a correct digit is placed using Solve Digit, then all placeholders of the same digit in the 3x3 grid, row and column should be removed. E.g. if solving for a 1 and the correct digit in that cell is 1, then if the number 1 is a placeholder in the same 3x3 grid, row or column, the placeholder should be removed, leaving all other existing placeholders as they are.
