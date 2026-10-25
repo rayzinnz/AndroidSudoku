@@ -236,6 +236,7 @@ fun SudokuCell(
 
     val backgroundColor = when {
         isHighlighted -> Color(0xFFFFF9C4)
+        cellState.userDigit != null && isDigitCorrect(cellState.index, cellState.userDigit!!) -> Color(0xFFC8E6C9)
         cellState.isPrefilled -> Color(0xFFC9DAFF)
         else -> Color.White
     }
