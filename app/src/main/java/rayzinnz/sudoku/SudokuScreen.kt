@@ -274,7 +274,7 @@ fun SudokuCell(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(2.dp),
+                        .padding(1.dp),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     for (r in 0..2) {
