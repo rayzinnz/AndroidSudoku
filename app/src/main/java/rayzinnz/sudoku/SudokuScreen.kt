@@ -297,6 +297,7 @@ fun SudokuCell(
                                         Text(
                                             text = "$digit",
                                             fontSize = 10.sp,
+                                            lineHeight = 10.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF1565C0)
                                         )
