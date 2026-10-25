@@ -274,7 +274,7 @@ fun SudokuCell(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(1.dp),
+                        .padding(2.dp),
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     for (r in 0..2) {
@@ -296,7 +296,7 @@ fun SudokuCell(
                                     if (isPresent) {
                                         Text(
                                             text = "$digit",
-                                            fontSize = 9.sp,
+                                            fontSize = 10.sp,
                                             fontWeight = FontWeight.SemiBold,
                                             color = Color(0xFF1565C0)
                                         )
