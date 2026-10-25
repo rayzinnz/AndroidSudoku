@@ -109,9 +109,39 @@ class SudokuViewModel(application: Application) : AndroidViewModel(application) 
                 )
             }
 
-            cells = cells.toMutableList().apply {
+            var updatedCells = cells.toMutableList().apply {
                 this[index] = updatedCell
             }
+
+            if (entryMode == EntryMode.SOLVE) {
+                val placedDigit = updatedCell.userDigit
+                if (placedDigit != null && placedDigit == solvedPuzzle[index]) {
+                    val row = index / 9
+                    val col = index % 9
+                    val boxRow = (row / 3) * 3
+                    val boxCol = (col / 3) * 3
+
+                    for (i in 0 until 81) {
+                        if (i == index) continue
+                        val r = i / 9
+                        val c = i % 9
+                        val inSameRow = (r == row)
+                        val inSameCol = (c == col)
+                        val inSameBox = ((r / 3) * 3 == boxRow) && ((c / 3) * 3 == boxCol)
+
+                        if (inSameRow || inSameCol || inSameBox) {
+                            val cellAtI = updatedCells[i]
+                            if (placedDigit in cellAtI.placeholders) {
+                                updatedCells[i] = cellAtI.copy(
+                                    placeholders = cellAtI.placeholders - placedDigit
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            cells = updatedCells
             highlightedDigit = selectedDigit
             saveState()
         }
